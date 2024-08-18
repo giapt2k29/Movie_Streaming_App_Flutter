@@ -2,9 +2,9 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:palette_generator/palette_generator.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
 import 'package:movie_streaming_app/my_home_page.dart';
-import 'package:movie_streaming_app/Other/app_colors.dart' as Color;
 import 'package:http/http.dart' as http;
 import 'shimmer_loading.dart';
 import 'movie_player.dart';
@@ -18,7 +18,7 @@ class MovieInfo extends StatefulWidget {
 }
 
 class _MovieInfoState extends State<MovieInfo> {
-
+  Color dominantColor = Colors.white;
   late YoutubePlayerController _controller;
   String name = '', content = '', trailer = '', time = '', list_actor = '', list_director = '', list_category = '', trailer_id = '';
   int year = 0;
@@ -49,7 +49,7 @@ class _MovieInfoState extends State<MovieInfo> {
     final screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      backgroundColor: Color.background,
+      backgroundColor: dominantColor,
       body: _isLoading ? ShimmerLoadingMovie() : MovieInfoLayout(),
     );
   }
@@ -58,7 +58,7 @@ class _MovieInfoState extends State<MovieInfo> {
   Widget MovieInfoLayout() {
     final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      backgroundColor: Color.background,
+      backgroundColor: dominantColor,
       body: Container(
         child: Column(
           children: [

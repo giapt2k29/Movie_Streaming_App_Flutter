@@ -1,22 +1,27 @@
 import 'dart:convert';
+import 'dart:ui';
 
-import 'package:app_color/app_color.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:movie_streaming_app/Other/app_colors.dart' as Color;
+import 'package:movie_streaming_app/Other/Global_value.dart';
+import 'package:movie_streaming_app/Other/app_colors.dart' as Color_;
 import 'package:http/http.dart' as http;
 import 'package:movie_streaming_app/movie_infor.dart';
 import 'package:movie_streaming_app/search_layout.dart';
 import 'shimmer_loading.dart';
+import 'package:provider/provider.dart';
+import 'package:palette_generator/palette_generator.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key});
-
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  int _currentPage = 0;
+  Color dominantColor = Color(0xFF1A0E0E);
+  Color backGround = Color_.background;
   List<dynamic> new_movie = [];
   List<dynamic> cartoon = [];
   List<dynamic> phimbo = [];
@@ -36,55 +41,50 @@ class _MyHomePageState extends State<MyHomePage> {
     hoc_duong();
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Color.background,
-      body: (_isLoading1 && _isLoading2 && _isLoading3 && _isLoading4 && _isLoading5 && _isLoading6) ? SimpleshimmerLoading() : HomeScreen(),
-    );
-  }
-
   Widget HomeScreen() {
     final screenWidth = MediaQuery.of(context).size.width;
     return Container(
-      color: Color.background,
+      color: Colors.transparent,
       child: SafeArea(
         child: Scaffold(
+          backgroundColor: dominantColor,
           body: SingleChildScrollView(
             child: Column(
               children: [
-                Container(
-                  margin: EdgeInsets.only(top: 20, left: 10, right: 10),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      ImageIcon(
-                        AssetImage("img/menu.png"),
-                        size: 24,
-                        color: Colors.black,
-                      ),
-                      Row(
-                        children: [
-                          GestureDetector(
-                            child: Icon(Icons.search),
-                            onTap: () {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => SearchBarLayout()));
-                            },
-                          ),
-                          SizedBox(width: 10),
-                          GestureDetector(
-                            child: Icon(Icons.notifications),
-                          )
-                        ],
-                      ),
-                    ],
+                GestureDetector(
+                  onTap: () {
+                    bool current = GlobalState().isSomeCondition;
+                    Provider.of<GlobalState>(context, listen: false).setSomeCondition(!current);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(top: 20, left: 10, right: 10),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(height: 24, width: 24,),
+                        Row(
+                          children: [
+                            GestureDetector(
+                              child: Icon(Icons.search, color: Colors.white,),
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) => SearchBarLayout()));
+                              },
+                            ),
+                            SizedBox(width: 10),
+                            GestureDetector(
+                              child: Icon(Icons.notifications, color: Colors.white,),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Container(
                   margin: EdgeInsets.only(top: 20, left: 10),
                   child: Row(
                     children: [
-                      Text("New Movie", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                      Text("New Movie", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
                     ],
                   ),
                 ),
@@ -95,10 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: PageView.builder(
                     controller: PageController(
                         viewportFraction: 0.8,
-                        initialPage: 2),
+                        initialPage: 2,),
                     itemCount: 5,
                     itemBuilder: (context, index) {
-                      final String poster_url = new_movie[index]['poster_url'];
+                      final String poster_url = new_movie[index]['thumb_url'];
                       return GestureDetector(
                           onTap: () {
                             final slug = new_movie[index]['slug'];
@@ -119,6 +119,13 @@ class _MyHomePageState extends State<MyHomePage> {
                           )
                       );
                     },
+                    onPageChanged: (int page) {
+                      setState(() {
+                        final poster = new_movie[page]['thumb_url'];
+                        print(poster);
+                        _updatePalette(poster);
+                      });
+                    },
                   ),
                 ),
                 SizedBox(height: 20),
@@ -127,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Hoạt hình", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text("Hoạt hình", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -137,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               initialPage: 2),
                           itemCount: 5,
                           itemBuilder: (context, index) {
-                            final cartoon_poster_url = 'https://phimimg.com/' + cartoon[index]['poster_url'];
+                            final cartoon_poster_url = 'https://phimimg.com/' + cartoon[index]['thumb_url'];
                             return GestureDetector(
                                 onTap: () {
                                   final slug = cartoon[index]['slug'];
@@ -169,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Phim bộ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                      Text("Phim bộ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -179,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               initialPage: 2),
                           itemCount: 5,
                           itemBuilder: (context, index) {
-                            final phim_bo_poster = 'https://phimimg.com/' + phimbo[index]['poster_url'];
+                            final phim_bo_poster = 'https://phimimg.com/' + phimbo[index]['thumb_url'];
                             return GestureDetector(
                                 onTap: () {
                                   final slug = phimbo[index]['slug'];
@@ -211,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Phim lẻ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                      Text("Phim lẻ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -221,7 +228,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               initialPage: 2),
                           itemCount: 5,
                           itemBuilder: (context, index) {
-                            final phimle_poster = 'https://phimimg.com/' + phimle[index]['poster_url'];
+                            final phimle_poster = 'https://phimimg.com/' + phimle[index]['thumb_url'];
                             return GestureDetector(
                                 onTap: () {
                                   final slug = phimle[index]['slug'];
@@ -253,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Hành động", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                      Text("Hành động", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -263,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               initialPage: 2),
                           itemCount: 5,
                           itemBuilder: (context, index) {
-                            final hanhdong_poster = 'https://phimimg.com/' + hanhdong[index]['poster_url'];
+                            final hanhdong_poster = 'https://phimimg.com/' + hanhdong[index]['thumb_url'];
                             return GestureDetector(
                                 onTap: () {
                                   final slug = hanhdong[index]['slug'];
@@ -295,7 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Học đường", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold)),
+                      Text("Học đường", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -305,7 +312,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               initialPage: 2),
                           itemCount: 5,
                           itemBuilder: (context, index) {
-                            final hocduong_poster = 'https://phimimg.com/' + hocduong[index]['poster_url'];
+                            final hocduong_poster = 'https://phimimg.com/' + hocduong[index]['thumb_url'];
                             return GestureDetector(
                                 onTap: () {
                                   final slug = hocduong[index]['slug'];
@@ -411,4 +418,22 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  Future<void> _updatePalette(String url) async {
+    final PaletteGenerator paletteGenerator =
+    await PaletteGenerator.fromImageProvider(
+      NetworkImage(url),
+    );
+    setState(() {
+      dominantColor = paletteGenerator.dominantColor?.color ?? Colors.transparent;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+
+    return Scaffold(
+      backgroundColor: dominantColor,
+      body: (_isLoading1 && _isLoading2 && _isLoading3 && _isLoading4 && _isLoading5 && _isLoading6) ? SimpleshimmerLoading() : HomeScreen(),
+    );
+  }
 }

@@ -28,6 +28,10 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  chewie: ^1.8.3
+  shimmer: ^3.0.0
+  youtube_player_flutter: ^8.1.0
+  http: ^1.2.2
   app_color: ^1.0.1
   flutter:
     sdk: flutter
@@ -53,6 +57,8 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  fonts:
+    - family: Montserrat
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

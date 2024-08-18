@@ -7,6 +7,7 @@ import 'package:movie_streaming_app/my_home_page.dart';
 import 'package:movie_streaming_app/Other/app_colors.dart' as Color;
 import 'package:http/http.dart' as http;
 import 'shimmer_loading.dart';
+import 'movie_player.dart';
 
 class MovieInfo extends StatefulWidget {
   final String data;
@@ -24,6 +25,7 @@ class _MovieInfoState extends State<MovieInfo> {
   List<dynamic> actor = [];
   List<dynamic> director = [];
   List<dynamic> category = [];
+  List<dynamic> episodes = [];
   bool _isLoading = true;
 
   @override
@@ -118,7 +120,7 @@ class _MovieInfoState extends State<MovieInfo> {
                             ),
                             child: Icon(Icons.play_arrow, size: 40),
                             onPressed: () {
-
+                              Navigator.push(context, MaterialPageRoute(builder: (context) => Movie_Player(data: episodes[0]['link_m3u8'])));
                             },
                           ),
                         ),
@@ -197,6 +199,8 @@ class _MovieInfoState extends State<MovieInfo> {
       director = json['movie']['director'];
       category = json['movie']['category'];
 
+      episodes = json['episodes'][0]['server_data'];
+
       list_actor = actor.join(', ');
       list_actor = "Đạo diễn: " + list_actor;
       list_director = director.join(', ');
@@ -205,7 +209,6 @@ class _MovieInfoState extends State<MovieInfo> {
         list_category += category[index]['name'] + ', ';
       }
       list_category = "Thể loại: " + list_category;
-      _isLoading = false;
 
       for(int index = 0; index < trailer.length; index++) {
         if(trailer[index] == '=') {
@@ -214,7 +217,7 @@ class _MovieInfoState extends State<MovieInfo> {
           }
         }
       }
-
+      _isLoading = false;
     });
   }
 

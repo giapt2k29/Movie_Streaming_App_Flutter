@@ -69,7 +69,7 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
                   animation: _animationController,
                   builder: (context, child) {
                     return Transform.translate(
-                      offset: Offset(animation.value * 288, 0),
+                      offset: Offset(animation.value * 250, 0),
                       child: Transform.scale(
                         scale: scaleAnimation.value,
                         child: ClipRRect(

@@ -173,3 +173,81 @@ class ShimmerLoadingMovie extends StatelessWidget {
     );
   }
 }
+class ShimmerLoadingCategory extends StatelessWidget {
+  const ShimmerLoadingCategory({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    return Scaffold(
+      body: Container(
+          height: double.infinity,
+          margin: EdgeInsets.only(top: 15),
+          child: Shimmer.Shimmer.fromColors(
+            period: Duration(seconds: 3),
+            baseColor: Colors.black,
+            highlightColor: Colors.white,
+            child: SingleChildScrollView(
+              child: Expanded(
+                child: Column(
+                  children: [
+                    Container(
+                      height: 60,
+                      alignment: Alignment.topCenter,
+                      child: Center(
+                        child: ShimmerBox(flex: 60, widthFactor: 0.4),
+                      ),
+                    ),
+                    SizedBox(height: 24,),
+                    Container(
+                      height: 210,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ShimmerBox(flex: 150, widthFactor: 0.7),
+                          ShimmerBox(flex: 150, widthFactor: 0.7),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24,),
+                    Container(
+                      height: 210,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ShimmerBox(flex: 150, widthFactor: 0.7),
+                          ShimmerBox(flex: 150, widthFactor: 0.7),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24,),
+                    Container(
+                      height: 210,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ShimmerBox(flex: 150, widthFactor: 0.7),
+                          ShimmerBox(flex: 150, widthFactor: 0.7),
+                        ],
+                      ),
+                    ),
+                    SizedBox(height: 24,),
+                    Container(
+                      height: 210,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          ShimmerBox(flex: 150, widthFactor: 0.7),
+                          ShimmerBox(flex: 150, widthFactor: 0.7),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+      ),
+    );
+  }
+}

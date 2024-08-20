@@ -1,87 +1,116 @@
-  import 'dart:convert';
+import 'dart:convert';
 
-  import 'package:flutter/cupertino.dart';
-  import 'package:flutter/material.dart';
-  import 'package:palette_generator/palette_generator.dart';
-  import 'package:youtube_player_flutter/youtube_player_flutter.dart';
-  import 'package:movie_streaming_app/my_home_page.dart';
-  import 'package:http/http.dart' as http;
-  import 'shimmer_loading.dart';
-  import 'movie_player.dart';
-  import 'package:movie_streaming_app/Other/app_colors.dart' as Color_custom;
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:movie_streaming_app/main.dart';
+import 'package:palette_generator/palette_generator.dart';
+import 'package:youtube_player_flutter/youtube_player_flutter.dart';
+import 'package:movie_streaming_app/my_home_page.dart';
+import 'package:http/http.dart' as http;
+import 'shimmer_loading.dart';
+import 'movie_player.dart';
+import 'package:movie_streaming_app/Other/app_colors.dart' as Color_custom;
 
-  class MovieInfo extends StatefulWidget {
-    final String data;
-    const MovieInfo({super.key, required this.data});
+class MovieInfo extends StatefulWidget {
+  final String data;
 
-    @override
-    _MovieInfoState createState() => _MovieInfoState();
+  const MovieInfo({super.key, required this.data});
+
+  @override
+  _MovieInfoState createState() => _MovieInfoState();
+}
+
+class _MovieInfoState extends State<MovieInfo> {
+  Color dominantColor = Colors.white;
+  Color episodes_color = Colors.white;
+
+  late YoutubePlayerController _controller;
+  String poster = '',
+      name = '',
+      content = '',
+      trailer = '',
+      time = '',
+      list_actor = '',
+      list_director = '',
+      list_category = '',
+      trailer_id = '',
+      thumb = '';
+  int year = 0;
+  List<dynamic> actor = [];
+  List<dynamic> director = [];
+  List<dynamic> category = [];
+  List<dynamic> episodes = [];
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = YoutubePlayerController(
+      initialVideoId: trailer_id,
+      flags: YoutubePlayerFlags(
+        autoPlay: true,
+        mute: false,
+      ),
+    );
+    read_movie_info();
   }
 
-  class _MovieInfoState extends State<MovieInfo> {
-    Color dominantColor = Colors.white;
-    late YoutubePlayerController _controller;
-    String poster = '',name = '', content = '', trailer = '', time = '', list_actor = '', list_director = '', list_category = '', trailer_id = '';
-    int year = 0;
-    List<dynamic> actor = [];
-    List<dynamic> director = [];
-    List<dynamic> category = [];
-    List<dynamic> episodes = [];
-    bool _isLoading = true;
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Scaffold(
+      backgroundColor: dominantColor,
+      body: _isLoading
+          ? ShimmerLoadingMovie()
+          : MovieInfoLayout(
+              screenWidth: screenWidth, screenHeight: screenHeight),
+    );
+  }
 
-    @override
-    void initState() {
-      super.initState();
-      _controller = YoutubePlayerController(
-        initialVideoId: trailer_id,
-        flags: YoutubePlayerFlags(
-          autoPlay: true,
-          mute: false,
+  Widget MovieInfoLayout(
+      {required double screenWidth, required double screenHeight}) {
+    return Stack(children: [
+      Container(
+        margin: const EdgeInsets.only(top: 0),
+        width: double.infinity,
+        child: Image(
+          image: NetworkImage(poster),
         ),
-      );
-      read_movie_info();
-    }
-
-    @override
-    Widget build(BuildContext context) {
-      final screenWidth = MediaQuery.of(context).size.width;
-
-      return Scaffold(
-        backgroundColor: dominantColor,
-        body: _isLoading
-            ? ShimmerLoadingMovie()
-            : MovieInfoLayout(screenWidth: screenWidth),
-      );
-    }
-
-    Widget MovieInfoLayout({required double screenWidth}) {
-      return Container(
+      ),
+      Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              Colors.transparent,
+              Colors.black,
+            ],
+            stops: [0.0, 1.0],
+          ),
+        ),
+      ),
+      SafeArea(
+        child: Container(
+          margin: EdgeInsets.only(top: 15, left: 10),
+          child: GestureDetector(
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (content) => MyApp()));
+            },
+            child:
+            const CircleAvatar(
+              backgroundColor: Colors.black,
+              child:
+              Icon(Icons.arrow_back, color: Colors.white, size: 34,),
+            ),
+          ),
+        ),
+      ),
+      Container(
+        margin: EdgeInsets.only(top: 350),
         child: Column(
           children: [
-            GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => MyHomePage()),
-                );
-              },
-              child: AppBar(
-                title: Text(
-                  'Movie Stream',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontSize: 30,
-                  ),
-                ),
-                centerTitle: true,
-              ),
-            ),
-            YoutubePlayer(
-              controller: _controller,
-              showVideoProgressIndicator: true,
-              progressIndicatorColor: Colors.white,
-            ),
             Expanded(
               child: SingleChildScrollView(
                 child: Column(
@@ -92,7 +121,7 @@
                         name,
                         style: TextStyle(
                           fontSize: 30,
-                          color: Colors.black,
+                          color: Colors.white,
                           fontFamily: 'Montserrat',
                           fontWeight: FontWeight.bold,
                         ),
@@ -104,22 +133,48 @@
                     SizedBox(
                       height: 60,
                       width: screenWidth,
-                      child: ElevatedButton(
-                        style: ElevatedButton.styleFrom(
-                          padding: EdgeInsets.symmetric(vertical: 10),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        child: Icon(Icons.play_arrow, size: 40),
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => Movie_Player(data: episodes[0]['link_m3u8']),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.all(10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              minimumSize: Size(200, 50),
                             ),
-                          );
-                        },
+                            child: Icon(Icons.play_arrow, size: 30),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      Movie_Player(data: episodes[0]['link_m3u8']),
+                                ),
+                              );
+                            },
+                          ),
+                          ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding: EdgeInsets.all(10),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              minimumSize: Size(200, 50),
+                            ),
+                            child: Icon(Icons.favorite, size: 30),
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      Movie_Player(data: episodes[0]['link_m3u8']),
+                                ),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ),
                     Container(
@@ -130,7 +185,10 @@
                         children: [
                           Text(
                             list_category,
-                            style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Montserrat'),
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                                fontFamily: 'Montserrat'),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
@@ -138,7 +196,10 @@
                           SizedBox(height: 20),
                           Text(
                             content,
-                            style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Montserrat'),
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                                fontFamily: 'Montserrat'),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
@@ -146,7 +207,10 @@
                           SizedBox(height: 20),
                           Text(
                             list_director,
-                            style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Montserrat'),
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                                fontFamily: 'Montserrat'),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
@@ -154,7 +218,10 @@
                           SizedBox(height: 20),
                           Text(
                             list_actor,
-                            style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Montserrat'),
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                                fontFamily: 'Montserrat'),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
@@ -162,12 +229,17 @@
                           SizedBox(height: 20),
                           Text(
                             'Năm sản xuất: ' + year.toString(),
-                            style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Montserrat'),
+                            style: TextStyle(
+                                fontSize: 15,
+                                color: Colors.white,
+                                fontFamily: 'Montserrat'),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
                           ),
-                          SizedBox(height: 20,),
+                          SizedBox(
+                            height: 20,
+                          ),
                           if (episodes.isNotEmpty)
                             ...List.generate(episodes.length, (index) {
                               if (episodes != null) {
@@ -178,7 +250,9 @@
                                         Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                            builder: (context) => Movie_Player(data: episodes[index]['link_m3u8']),
+                                            builder: (context) => Movie_Player(
+                                                data: episodes[index]
+                                                    ['link_m3u8']),
                                           ),
                                         );
                                       },
@@ -186,13 +260,34 @@
                                         height: 100,
                                         width: screenWidth,
                                         child: Container(
-                                          color: Color_custom.audioBlueBackground,
-                                          child: Row(
-                                            children: [
-                                              Image(image: NetworkImage(poster)),
-                                              SizedBox(width: 20),
-                                              Text('Tập: ${index + 1}',style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))
-                                            ],
+                                          decoration: BoxDecoration(
+                                            color: episodes_color,
+                                            borderRadius:
+                                                BorderRadius.circular(10),
+                                          ),
+                                          child: Padding(
+                                            padding: const EdgeInsets.all(8.0),
+                                            child: Row(
+                                              children: [
+                                                Container(
+                                                    width: 150,
+                                                    height: 100,
+                                                    decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            BorderRadius
+                                                                .circular(10)),
+                                                    child: Image(
+                                                        image: NetworkImage(
+                                                            thumb))),
+                                                SizedBox(width: 20),
+                                                Text('Tập: ${index + 1}',
+                                                    style: TextStyle(
+                                                        color: Colors.white,
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold))
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
@@ -205,7 +300,6 @@
                                 return SizedBox();
                               }
                             }).toList(),
-
                         ],
                       ),
                     ),
@@ -215,46 +309,60 @@
             ),
           ],
         ),
-      );
-    }
+      ),
+    ]);
+  }
 
-    void read_movie_info() async {
-      final url = 'https://phimapi.com/phim/' + widget.data;
+  void read_movie_info() async {
+    final url = 'https://phimapi.com/phim/' + widget.data;
 
-      final uri = Uri.parse(url);
-      final response = await http.get(uri);
-      final body = response.body;
-      final json = jsonDecode(body);
+    final uri = Uri.parse(url);
+    final response = await http.get(uri);
+    final body = response.body;
+    final json = jsonDecode(body);
 
-      setState(() {
-        name = json['movie']['name'];
-        content = json['movie']['content'];
-        trailer = json['movie']['trailer_url'];
-        year = json['movie']['year'];
-        actor = json['movie']['actor'];
-        director = json['movie']['director'];
-        category = json['movie']['category'];
+    setState(() {
+      name = json['movie']['name'];
+      content = json['movie']['content'];
+      trailer = json['movie']['trailer_url'];
+      year = json['movie']['year'];
+      actor = json['movie']['actor'];
+      director = json['movie']['director'];
+      category = json['movie']['category'];
 
-        episodes = json['episodes'][0]['server_data'];
+      episodes = json['episodes'][0]['server_data'];
 
-        list_actor = actor.join(', ');
-        list_actor = "Đạo diễn: " + list_actor;
-        list_director = director.join(', ');
-        list_director = "Diễn viên: " + list_director;
-        for(int index = 0; index < category.length; index++) {
-          list_category += category[index]['name'] + ', ';
-        }
-        list_category = "Thể loại: " + list_category;
+      list_actor = actor.join(', ');
+      list_actor = "Đạo diễn: " + list_actor;
+      list_director = director.join(', ');
+      list_director = "Diễn viên: " + list_director;
+      for (int index = 0; index < category.length; index++) {
+        list_category += category[index]['name'] + ', ';
+      }
+      list_category = "Thể loại: " + list_category;
 
-        for(int index = 0; index < trailer.length; index++) {
-          if(trailer[index] == '=') {
-            for(int j = index + 1; j < trailer.length; j++) {
-              trailer_id += trailer[j];
-            }
+      for (int index = 0; index < trailer.length; index++) {
+        if (trailer[index] == '=') {
+          for (int j = index + 1; j < trailer.length; j++) {
+            trailer_id += trailer[j];
           }
         }
-        poster = json['movie']['poster_url'];
-        _isLoading = false;
-      });
-    }
+      }
+      thumb = json['movie']['thumb_url'];
+      poster = json['movie']['poster_url'];
+      _isLoading = false;
+      _updatePalette(poster);
+    });
   }
+
+  Future<void> _updatePalette(String url) async {
+    final PaletteGenerator paletteGenerator =
+        await PaletteGenerator.fromImageProvider(
+      NetworkImage(url),
+    );
+    setState(() {
+      episodes_color =
+          paletteGenerator.dominantColor?.color ?? Colors.transparent;
+    });
+  }
+}

@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_streaming_app/category_items_show.dart';
+import 'package:movie_streaming_app/main.dart';
 import 'package:movie_streaming_app/my_home_page.dart';
 import 'package:movie_streaming_app/search_layout.dart';
 import 'Other/app_colors.dart' as Color;
@@ -31,10 +33,11 @@ class _MyWidgetState extends State<MyWidget> {
   Widget build(BuildContext context) {
     final screenHeigh = MediaQuery.of(context).size.height;
     return Scaffold(
+      backgroundColor: Color.loveColor,
       body: Container(
         child: SingleChildScrollView(
           child: Container(
-            width: double.infinity,
+            width: 288,
             height: screenHeigh * 6,
             color: Color.loveColor,
             child: Column(
@@ -60,7 +63,7 @@ class _MyWidgetState extends State<MyWidget> {
                     ListTile(
                       onTap: () {
                         Provider.of<GlobalState>(context, listen: false).setSomeCondition(false);
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
                       },
                       leading: Icon(Icons.home, color: Colors.white, size: 34),
                       title: Text("Home", style: TextStyle(color: Colors.white)),
@@ -149,6 +152,9 @@ class _MyWidgetState extends State<MyWidget> {
                     itemCount: category.length,
                     itemBuilder: (context, index) {
                       return GestureDetector(
+                        onTap: () {
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => Category_Items(data: category[index])));
+                        },
                         child: Container(
                           margin: EdgeInsets.only(left: 20),
                           child: ListTile(

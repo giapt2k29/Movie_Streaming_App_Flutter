@@ -19,9 +19,10 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _currentPage = 0;
   Color dominantColor = Color(0xFF1A0E0E);
   Color backGround = Color_.background;
+  
+  List<Color> listcolors = [];
   List<dynamic> new_movie = [];
   List<dynamic> cartoon = [];
   List<dynamic> phimbo = [];
@@ -95,8 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: PageView.builder(
                     controller: PageController(
                         viewportFraction: 0.8,
-                        initialPage: 2,),
-                    itemCount: 5,
+                        initialPage: 3,),
+                    itemCount: new_movie.length,
                     itemBuilder: (context, index) {
                       final String poster_url = new_movie[index]['thumb_url'];
                       return GestureDetector(
@@ -121,9 +122,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     },
                     onPageChanged: (int page) {
                       setState(() {
-                        final poster = new_movie[page]['thumb_url'];
-                        print(poster);
-                        _updatePalette(poster);
+                        dominantColor = listcolors[page];
                       });
                     },
                   ),
@@ -354,8 +353,11 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       new_movie = json['items'];
-      _isLoading1 = false;
     });
+    for(int i = 0; i < new_movie.length; i++) {
+      _updatePalette(new_movie[i]['thumb_url']);
+    }
+    _isLoading1 = false;
   }
 
   void cartoon_movie() async {
@@ -366,8 +368,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       cartoon = json['data']['items'];
-      _isLoading2 = false;
     });
+    _isLoading2 = false;
   }
 
   void phim_bo() async {
@@ -378,8 +380,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       phimbo = json['data']['items'];
-      _isLoading3 = false;
     });
+    _isLoading3 = false;
   }
 
   void phim_le() async {
@@ -390,8 +392,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       phimle = json['data']['items'];
-      _isLoading4 = false;
     });
+    _isLoading4 = false;
   }
 
   void hanh_dong() async {
@@ -402,8 +404,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       hanhdong = json['data']['items'];
-      _isLoading5 = false;
     });
+    _isLoading5 = false;
   }
 
   void hoc_duong() async {
@@ -414,8 +416,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       hocduong = json['data']['items'];
-      _isLoading6 = false;
     });
+    _isLoading6 = false;
   }
 
   Future<void> _updatePalette(String url) async {
@@ -424,13 +426,12 @@ class _MyHomePageState extends State<MyHomePage> {
       NetworkImage(url),
     );
     setState(() {
-      dominantColor = paletteGenerator.dominantColor?.color ?? Colors.transparent;
+      listcolors.add( paletteGenerator.dominantColor?.color ?? Colors.transparent);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       backgroundColor: dominantColor,
       body: (_isLoading1 && _isLoading2 && _isLoading3 && _isLoading4 && _isLoading5 && _isLoading6) ? SimpleshimmerLoading() : HomeScreen(),

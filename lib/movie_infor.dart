@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:movie_streaming_app/Model/favorite.dart';
+import 'package:movie_streaming_app/database/favorite_database.dart';
 import 'package:movie_streaming_app/main.dart';
 import 'package:palette_generator/palette_generator.dart';
 import 'package:youtube_player_flutter/youtube_player_flutter.dart';
@@ -13,7 +15,6 @@ import 'package:movie_streaming_app/Other/app_colors.dart' as Color_custom;
 
 class MovieInfo extends StatefulWidget {
   final String data;
-
   const MovieInfo({super.key, required this.data});
 
   @override
@@ -21,10 +22,20 @@ class MovieInfo extends StatefulWidget {
 }
 
 class _MovieInfoState extends State<MovieInfo> {
+  Future<List<Favorite>>? futureFavorite;
+  final favoriteDB = FavoriteDB();
+
+  bool _isFavorite = false;
+
+  List<Favorite> favorites = [];
+  String slug = '';
+
   Color dominantColor = Colors.white;
   Color episodes_color = Colors.white;
+  Color Favorite_color = Colors.black;
 
   late YoutubePlayerController _controller;
+
   String poster = '',
       name = '',
       content = '',
@@ -45,6 +56,7 @@ class _MovieInfoState extends State<MovieInfo> {
   @override
   void initState() {
     super.initState();
+    fetchAll();
     _controller = YoutubePlayerController(
       initialVideoId: trailer_id,
       flags: YoutubePlayerFlags(
@@ -144,7 +156,7 @@ class _MovieInfoState extends State<MovieInfo> {
                               ),
                               minimumSize: Size(200, 50),
                             ),
-                            child: Icon(Icons.play_arrow, size: 30),
+                            child: Icon(Icons.play_circle_fill_rounded, size: 30, color: Colors.black,),
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -163,15 +175,18 @@ class _MovieInfoState extends State<MovieInfo> {
                               ),
                               minimumSize: Size(200, 50),
                             ),
-                            child: Icon(Icons.favorite, size: 30),
+                            child: Icon(Icons.favorite, size: 30, color: _isFavorite ? Colors.pink : Colors.black,),
                             onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      Movie_Player(data: episodes[0]['link_m3u8']),
-                                ),
-                              );
+                              setState(() {
+                                if(_isFavorite) {
+                                  favoriteDB.delete(slug);
+                                  _isFavorite = false;
+                                }
+                                else {
+                                  favoriteDB.create(slug: slug);
+                                  _isFavorite = true;
+                                }
+                              });
                             },
                           ),
                         ],
@@ -350,6 +365,7 @@ class _MovieInfoState extends State<MovieInfo> {
       }
       thumb = json['movie']['thumb_url'];
       poster = json['movie']['poster_url'];
+      slug = json['movie']['slug'];
       _isLoading = false;
       _updatePalette(poster);
     });
@@ -364,5 +380,14 @@ class _MovieInfoState extends State<MovieInfo> {
       episodes_color =
           paletteGenerator.dominantColor?.color ?? Colors.transparent;
     });
+  }
+
+  void fetchAll() async {
+    favorites = await favoriteDB.fetchAll();
+    for(int i = 0; i < favorites.length; i++) {
+      if(favorites[i].slug == widget.data) {
+        _isFavorite = true;
+      }
+    }
   }
 }

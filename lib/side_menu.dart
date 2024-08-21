@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:movie_streaming_app/category_items_show.dart';
+import 'package:movie_streaming_app/favorite_layout.dart';
 import 'package:movie_streaming_app/main.dart';
 import 'package:movie_streaming_app/my_home_page.dart';
 import 'package:movie_streaming_app/search_layout.dart';
@@ -101,11 +102,7 @@ class _MyWidgetState extends State<MyWidget> {
                     ) : SizedBox(),
                     ListTile(
                       onTap: () {
-                        Provider.of<GlobalState>(context, listen: false).setSomeCondition(false);
-                        setState(() {
-                          _isActive = true;
-                        });
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => MyHomePage()));
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => const Favorite_Items()));
                       },
                       leading: Icon(Icons.favorite, color: Colors.white, size: 34),
                       title: Text("Favorite", style: TextStyle(color: Colors.white)),
@@ -185,6 +182,9 @@ class _MyWidgetState extends State<MyWidget> {
                     itemBuilder: (context, index) {
                       return
                         GestureDetector(
+                          onTap: () {
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => Category_Items(data: country[index])));
+                          },
                           child:
                           Container(
                             margin: EdgeInsets.only(left: 20),

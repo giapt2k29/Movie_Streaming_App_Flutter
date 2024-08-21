@@ -10,28 +10,26 @@ import 'package:http/http.dart' as http;
 import 'package:movie_streaming_app/shimmer_loading.dart';
 import 'package:palette_generator/palette_generator.dart';
 
-class Category_Items extends StatefulWidget{
-  final String data;
-  const Category_Items({super.key, required this.data});
+class Favorite_Items extends StatefulWidget{
+  const Favorite_Items({super.key});
 
-  _Category_show createState() => _Category_show();
+  _Favorite createState() => _Favorite();
 }
 
-class _Category_show extends State<Category_Items> {
+class _Favorite extends State<Favorite_Items> {
+  List<Favorite>? favorites = [];
+  final favorite = FavoriteDB();
   bool _isLoading = true;
   Color color_background = Color(0xFF1A0E0E);
   List<dynamic> movie = [];
   int index_color = 0;
-  int limit = 10;
-
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-
-    request_api(widget.data, limit);
+    fetchAll();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -43,7 +41,7 @@ class _Category_show extends State<Category_Items> {
             child: Column(
               children: [
                 SizedBox(height: 30,),
-                Text(widget.data, style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30, color: Colors.white),),
+                Text('Favorite', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30, color: Colors.white),),
                 SizedBox(height: 20,),
                 Expanded(
                   child: SingleChildScrollView(
@@ -58,8 +56,8 @@ class _Category_show extends State<Category_Items> {
                               spacing: 40,
                               runSpacing: 16.0,
                               children: List.generate(
-                                movie.length,
-                                  (index) => GestureDetector(
+                                  movie.length,
+                                      (index) => GestureDetector(
                                     onTap: () {
                                       Navigator.push(context, MaterialPageRoute(builder: (context) => MovieInfo(data: movie[index]['slug'])));
                                     },
@@ -73,11 +71,11 @@ class _Category_show extends State<Category_Items> {
                                             height: 210,
                                             alignment: Alignment.topCenter,
                                             decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(10),
-                                              image: new DecorationImage(
-                                                image: NetworkImage('https://phimimg.com/' + movie[index]['poster_url']),
-                                                fit: BoxFit.cover
-                                              )
+                                                borderRadius: BorderRadius.circular(10),
+                                                image: new DecorationImage(
+                                                    image: NetworkImage(movie[index]['poster_url']),
+                                                    fit: BoxFit.cover
+                                                )
                                             ),
                                           ),
                                           Flexible(
@@ -108,29 +106,8 @@ class _Category_show extends State<Category_Items> {
                                   )
                               ),
                             ),
-                            ),
                           ),
-                        _isLoading ? SizedBox() : Center(
-                          child: GestureDetector(
-                            onTap: () {
-                              setState(() {
-                                limit += 5;
-                                request_api(widget.data, limit);
-                              });
-                            },
-                            child: Container(
-                              child: Center(
-                                child: Text('More', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),),
-                              ),
-                              height: 40,
-                              width: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10)
-                              ),
-                            ),
-                          ),
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -142,29 +119,38 @@ class _Category_show extends State<Category_Items> {
         Container(
           margin: EdgeInsets.only(top: 30, left: 10),
           child: CircleAvatar(
-          backgroundColor: Colors.white,
+            backgroundColor: Colors.white,
             child: GestureDetector(
               onTap: () {
-              Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
-            },
+                Navigator.push(context, MaterialPageRoute(builder: (context) => MyApp()));
+              },
               child: Icon(Icons.arrow_back),
+            ),
           ),
-                  ),
-                )
+        )
       ],
     );
   }
   //Request API
-  void request_api(String category, int limit) async {
-    final url = 'https://phimapi.com/v1/api/tim-kiem?keyword=$category&limit=$limit';
+  void request_api(String slug) async {
+    final url = 'https://phimapi.com/phim/$slug';
     final uri = Uri.parse(url);
     final respone = await http.get(uri);
     final body = respone.body;
     final json = jsonDecode(body);
     setState(() {
-      movie = json['data']['items'];
+      movie.add(json['movie']);
     });
+  }
+
+  void fetchAll() async {
+    favorites = await favorite.fetchAll();
+    if(favorites?.isNotEmpty == true) {
+      for (int i = 0; i < favorites!.length; i++) {
+        String slug = favorites![i].slug;
+        request_api(slug);
+      }
+    }
     _isLoading = false;
   }
-  //Background Color change
 }

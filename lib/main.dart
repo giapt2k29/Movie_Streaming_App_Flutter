@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:movie_streaming_app/database/favorite_database.dart';
 import 'package:provider/provider.dart';
 import 'package:movie_streaming_app/Other/Global_value.dart';
+import 'database/favorite_service.dart';
 import 'my_home_page.dart';
 import 'side_menu.dart';
 import 'package:movie_streaming_app/Other/app_colors.dart' as Color;
@@ -20,6 +22,8 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
+  final dataservice = FavoriteDB();
+
   late AnimationController _animationController;
   late Animation<double> animation;
   late Animation<double> scaleAnimation;
@@ -27,6 +31,10 @@ class _MyAppState extends State<MyApp> with SingleTickerProviderStateMixin {
 
   @override
   void initState() {
+    setState(() {
+      dataservice.fetchAll();
+    });
+
     super.initState();
 
     _animationController = AnimationController(

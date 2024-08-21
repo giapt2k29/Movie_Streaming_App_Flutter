@@ -28,7 +28,9 @@ environment:
 # the latest version available on pub.dev. To see which dependencies have newer
 # versions available, run `flutter pub outdated`.
 dependencies:
+  google_fonts: ^6.2.1
   sqflite: ^2.3.3+1
+  video_player: ^2.9.1
   floor: ^1.5.0
   palette_generator: ^0.3.3+4
   chewie: ^1.8.3
@@ -59,8 +61,6 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-  fonts:
-    - family: Montserrat
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

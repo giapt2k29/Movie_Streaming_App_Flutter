@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_streaming_app/Model/favorite.dart';
 import 'package:movie_streaming_app/database/favorite_database.dart';
 import 'package:movie_streaming_app/main.dart';
@@ -34,8 +35,6 @@ class _MovieInfoState extends State<MovieInfo> {
   Color episodes_color = Colors.white;
   Color Favorite_color = Colors.black;
 
-  late YoutubePlayerController _controller;
-
   String poster = '',
       name = '',
       content = '',
@@ -57,13 +56,6 @@ class _MovieInfoState extends State<MovieInfo> {
   void initState() {
     super.initState();
     fetchAll();
-    _controller = YoutubePlayerController(
-      initialVideoId: trailer_id,
-      flags: YoutubePlayerFlags(
-        autoPlay: true,
-        mute: false,
-      ),
-    );
     read_movie_info();
   }
 
@@ -131,12 +123,7 @@ class _MovieInfoState extends State<MovieInfo> {
                       padding: const EdgeInsets.all(10.0),
                       child: Text(
                         name,
-                        style: TextStyle(
-                          fontSize: 30,
-                          color: Colors.white,
-                          fontFamily: 'Montserrat',
-                          fontWeight: FontWeight.bold,
-                        ),
+                        style: GoogleFonts.montserrat(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
                         softWrap: true,
                         maxLines: null,
                         overflow: TextOverflow.visible,
@@ -156,7 +143,7 @@ class _MovieInfoState extends State<MovieInfo> {
                               ),
                               minimumSize: Size(200, 50),
                             ),
-                            child: Icon(Icons.play_circle_fill_rounded, size: 30, color: Colors.black,),
+                            child: const Icon(Icons.play_circle_fill_rounded, size: 30, color: Colors.black,),
                             onPressed: () {
                               Navigator.push(
                                 context,
@@ -169,11 +156,11 @@ class _MovieInfoState extends State<MovieInfo> {
                           ),
                           ElevatedButton(
                             style: ElevatedButton.styleFrom(
-                              padding: EdgeInsets.all(10),
+                              padding: const EdgeInsets.all(10),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10),
                               ),
-                              minimumSize: Size(200, 50),
+                              minimumSize: const Size(200, 50),
                             ),
                             child: Icon(Icons.favorite, size: 30, color: _isFavorite ? Colors.pink : Colors.black,),
                             onPressed: () {
@@ -193,128 +180,108 @@ class _MovieInfoState extends State<MovieInfo> {
                       ),
                     ),
                     Container(
-                      margin: EdgeInsets.only(top: 10),
-                      padding: EdgeInsets.symmetric(horizontal: 10),
+                      margin: const EdgeInsets.only(top: 10),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             list_category,
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
-                                fontFamily: 'Montserrat'),
+                            style: GoogleFonts.montserrat(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Text(
                             content,
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
-                                fontFamily: 'Montserrat'),
+                            style: GoogleFonts.montserrat(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Text(
                             list_director,
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
-                                fontFamily: 'Montserrat'),
+                            style: GoogleFonts.montserrat(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
                           ),
-                          SizedBox(height: 20),
+                          const SizedBox(height: 20),
                           Text(
                             list_actor,
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
-                                fontFamily: 'Montserrat'),
+                            style: GoogleFonts.montserrat(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
                           ),
                           SizedBox(height: 20),
                           Text(
-                            'Năm sản xuất: ' + year.toString(),
-                            style: TextStyle(
-                                fontSize: 15,
-                                color: Colors.white,
-                                fontFamily: 'Montserrat'),
+                            'Năm sản xuất: $year',
+                            style: GoogleFonts.montserrat(fontSize: 15, color: Colors.white, fontWeight: FontWeight.bold),
                             softWrap: true,
                             maxLines: null,
                             overflow: TextOverflow.visible,
                           ),
-                          SizedBox(
+                          const SizedBox(
                             height: 20,
                           ),
                           if (episodes.isNotEmpty)
                             ...List.generate(episodes.length, (index) {
-                              if (episodes != null) {
-                                return Column(
-                                  children: [
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) => Movie_Player(
-                                                data: episodes[index]
-                                                    ['link_m3u8']),
-                                          ),
-                                        );
-                                      },
-                                      child: SizedBox(
-                                        height: 100,
-                                        width: screenWidth,
-                                        child: Container(
-                                          decoration: BoxDecoration(
-                                            color: episodes_color,
-                                            borderRadius:
-                                                BorderRadius.circular(10),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Container(
-                                                    width: 150,
-                                                    height: 100,
-                                                    decoration: BoxDecoration(
-                                                        borderRadius:
-                                                            BorderRadius
-                                                                .circular(10)),
-                                                    child: Image(
-                                                        image: NetworkImage(
-                                                            thumb))),
-                                                SizedBox(width: 20),
-                                                Text('Tập: ${index + 1}',
-                                                    style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 15,
-                                                        fontWeight:
-                                                            FontWeight.bold))
-                                              ],
-                                            ),
+                              return Column(
+                                children: [
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Movie_Player(
+                                              data: episodes[index]
+                                                  ['link_m3u8']),
+                                        ),
+                                      );
+                                    },
+                                    child: SizedBox(
+                                      height: 100,
+                                      width: screenWidth,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: episodes_color,
+                                          borderRadius:
+                                              BorderRadius.circular(10),
+                                        ),
+                                        child: Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            children: [
+                                              Container(
+                                                  width: 150,
+                                                  height: 100,
+                                                  decoration: BoxDecoration(
+                                                      borderRadius:
+                                                          BorderRadius
+                                                              .circular(10)),
+                                                  child: Image(
+                                                      image: NetworkImage(
+                                                          thumb))),
+                                              SizedBox(width: 20),
+                                              Text('Tập: ${index + 1}',
+                                                  style: const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 15,
+                                                      fontWeight:
+                                                          FontWeight.bold))
+                                            ],
                                           ),
                                         ),
                                       ),
                                     ),
-                                    SizedBox(height: 10),
-                                  ],
-                                );
-                              } else {
-                                // Nếu phần tử là null, trả về một widget rỗng hoặc xử lý khác tùy ý
-                                return SizedBox();
-                              }
-                            }).toList(),
+                                  ),
+                                  const SizedBox(height: 10),
+                                ],
+                              );
+                                                        }).toList(),
                         ],
                       ),
                     ),
@@ -329,7 +296,7 @@ class _MovieInfoState extends State<MovieInfo> {
   }
 
   void read_movie_info() async {
-    final url = 'https://phimapi.com/phim/' + widget.data;
+    final url = 'https://phimapi.com/phim/${widget.data}';
 
     final uri = Uri.parse(url);
     final response = await http.get(uri);
@@ -348,13 +315,13 @@ class _MovieInfoState extends State<MovieInfo> {
       episodes = json['episodes'][0]['server_data'];
 
       list_actor = actor.join(', ');
-      list_actor = "Đạo diễn: " + list_actor;
+      list_actor = "Đạo diễn: $list_actor";
       list_director = director.join(', ');
       list_director = "Diễn viên: " + list_director;
       for (int index = 0; index < category.length; index++) {
         list_category += category[index]['name'] + ', ';
       }
-      list_category = "Thể loại: " + list_category;
+      list_category = "Thể loại: $list_category";
 
       for (int index = 0; index < trailer.length; index++) {
         if (trailer[index] == '=') {

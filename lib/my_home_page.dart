@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:movie_streaming_app/Other/Global_value.dart';
 import 'package:movie_streaming_app/Other/app_colors.dart' as Color_;
 import 'package:http/http.dart' as http;
@@ -85,7 +86,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   margin: EdgeInsets.only(top: 20, left: 10),
                   child: Row(
                     children: [
-                      Text("New Movie", style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text("New Movie", style: GoogleFonts.montserrat(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
@@ -96,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: PageView.builder(
                     controller: PageController(
                         viewportFraction: 0.8,
-                        initialPage: 3,),
+                        initialPage: 1,),
                     itemCount: new_movie.length,
                     itemBuilder: (context, index) {
                       final String poster_url = new_movie[index]['thumb_url'];
@@ -133,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Hoạt hình", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text("Hoạt hình", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -175,7 +176,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Phim bộ", style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text("Phim bộ", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -217,7 +218,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Phim lẻ", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text("Phim lẻ", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -259,7 +260,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text("Hành động", style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold, color: Colors.white)),
+                      Text("Hành động", style: GoogleFonts.montserrat(fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold)),
                       SizedBox(height: 10),
                       Container(
                         height: screenWidth * 0.5 * 0.67,
@@ -356,8 +357,8 @@ class _MyHomePageState extends State<MyHomePage> {
     });
     for(int i = 0; i < new_movie.length; i++) {
       _updatePalette(new_movie[i]['thumb_url']);
+      _isLoading1 = false;
     }
-    _isLoading1 = false;
   }
 
   void cartoon_movie() async {
@@ -368,8 +369,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       cartoon = json['data']['items'];
+      _isLoading2 = false;
     });
-    _isLoading2 = false;
   }
 
   void phim_bo() async {
@@ -380,8 +381,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       phimbo = json['data']['items'];
+      _isLoading3 = false;
     });
-    _isLoading3 = false;
   }
 
   void phim_le() async {
@@ -392,8 +393,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       phimle = json['data']['items'];
+      _isLoading4 = false;
     });
-    _isLoading4 = false;
   }
 
   void hanh_dong() async {
@@ -404,8 +405,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       hanhdong = json['data']['items'];
+      _isLoading5 = false;
     });
-    _isLoading5 = false;
   }
 
   void hoc_duong() async {
@@ -416,8 +417,8 @@ class _MyHomePageState extends State<MyHomePage> {
     final json = jsonDecode(body);
     setState(() {
       hocduong = json['data']['items'];
+      _isLoading6 = false;
     });
-    _isLoading6 = false;
   }
 
   Future<void> _updatePalette(String url) async {

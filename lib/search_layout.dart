@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'movie_infor.dart';
 
@@ -91,7 +92,7 @@ class _SearchLayout extends State<SearchBarLayout> {
                                                   children: [
                                                     Text(
                                                       name,
-                                                      style: TextStyle(fontSize: 20, color: Colors.black, fontFamily: 'Montserrat', fontWeight: FontWeight.bold),
+                                                      style: GoogleFonts.montserrat(fontSize: 15, color: Colors.black, fontWeight: FontWeight.bold),
                                                       softWrap: true,
                                                       maxLines: null,
                                                       overflow: TextOverflow.visible,
@@ -99,21 +100,21 @@ class _SearchLayout extends State<SearchBarLayout> {
                                                     SizedBox(height: 5,),
                                                     Text(
                                                       current,
-                                                      style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Montserrat'),
+                                                      style: GoogleFonts.montserrat(fontSize: 15, color: Colors.black,),
                                                       softWrap: true,
                                                       maxLines: null,
                                                       overflow: TextOverflow.visible,
                                                     ),
                                                     Text(
                                                       time,
-                                                      style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Montserrat'),
+                                                      style: GoogleFonts.montserrat(fontSize: 15, color: Colors.black,),
                                                       softWrap: true,
                                                       maxLines: null,
                                                       overflow: TextOverflow.visible,
                                                     ),
                                                     Text(
                                                       year.toString(),
-                                                      style: TextStyle(fontSize: 15, color: Colors.black, fontFamily: 'Montserrat'),
+                                                      style: GoogleFonts.montserrat(fontSize: 15, color: Colors.black,),
                                                       softWrap: true,
                                                       maxLines: null,
                                                       overflow: TextOverflow.visible,
